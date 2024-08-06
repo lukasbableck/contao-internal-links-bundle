@@ -7,6 +7,9 @@ use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 #[AsHook('loadDataContainer')]
 class LoadDataContainerListener {
 	public function __invoke(string $table): void {
+		if(!in_array($table, ['tl_calendar_events', 'tl_faq', 'tl_news', 'tl_page'])) {
+			return;
+		}
 		$GLOBALS['TL_DCA'][$table]['fields']['internalLinkKeywords'] = [
 			'label' => &$GLOBALS['TL_LANG']['internal_links']['internalLinkKeywords'],
 			'exclude' => true,
