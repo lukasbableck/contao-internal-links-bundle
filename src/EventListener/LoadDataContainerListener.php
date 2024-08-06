@@ -31,6 +31,13 @@ class LoadDataContainerListener {
 			'eval' => ['tl_class' => 'w50 clr'],
 			'sql' => "char(1) NOT NULL default ''",
 		];
+		$GLOBALS['TL_DCA'][$table]['fields']['internalLinkBlank'] = [
+			'label' => &$GLOBALS['TL_LANG']['internal_links']['internalLinkBlank'],
+			'exclude' => true,
+			'inputType' => 'checkbox',
+			'eval' => ['tl_class' => 'w50'],
+			'sql' => "char(1) NOT NULL default ''",
+		];
 
 		$legend = 'protected_legend';
 		if ('tl_calendar_events' == $table) {
@@ -46,6 +53,7 @@ class LoadDataContainerListener {
 			->addField('internalLinkKeywords', 'internal_links_legend', PaletteManipulator::POSITION_APPEND)
 			->addField('internalLinkMaxPerPage', 'internal_links_legend', PaletteManipulator::POSITION_APPEND)
 			->addField('internalLinkNoFollow', 'internal_links_legend', PaletteManipulator::POSITION_APPEND)
+			->addField('internalLinkBlank', 'internal_links_legend', PaletteManipulator::POSITION_APPEND)
 		;
 		switch ($table) {
 			case 'tl_calendar_events':

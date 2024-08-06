@@ -25,5 +25,11 @@ $GLOBALS['TL_DCA']['tl_internal_link_index'] = [
 		'keywords' => [
 			'sql' => "text NULL",
 		],
+		'nofollow' => [
+			'sql' => "int(1) unsigned NOT NULL default '0'",
+		],
+		'blank' => [
+			'sql' => "int(1) unsigned NOT NULL default '0'",
+		],
 	]
 ];

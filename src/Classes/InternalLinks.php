@@ -18,7 +18,9 @@ class InternalLinks {
 				$index[] = [
 					'rootPageID' => $page->rootId,
 					'url' => $page->getAbsoluteUrl(),
+					'nofollow' => $page->internalLinkNoFollow,
 					'keywords' => $page->internalLinkKeywords,
+					'blank' => $page->internalLinkBlank
 				];
 			}
 		}
@@ -29,12 +31,14 @@ class InternalLinks {
 	private function saveIndex(array $index): void {
 		$connection = $this->connection;
 		$connection->executeStatement('TRUNCATE TABLE tl_internal_link_index;');
-		$query = 'INSERT INTO tl_internal_link_index (rootPageID, url, keywords) VALUES (?, ?, ?);';
+		$query = 'INSERT INTO tl_internal_link_index (rootPageID, url, keywords, nofollow, blank) VALUES (?, ?, ?, ?, ?);';
 		foreach ($index as $entry) {
 			$connection->executeQuery($query, [
 				$entry['rootPageID'],
 				$entry['url'],
-				$entry['keywords']
+				$entry['keywords'],
+				$entry['nofollow'],
+				$entry['blank']
 			]);
 		}
 	}
