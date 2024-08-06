@@ -2,7 +2,6 @@
 namespace Lukasbableck\ContaoInternalLinksBundle\Classes;
 
 use Contao\PageModel;
-use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
 
 class InternalLinks {
@@ -20,7 +19,7 @@ class InternalLinks {
 					'url' => $page->getAbsoluteUrl(),
 					'nofollow' => $page->internalLinkNoFollow,
 					'keywords' => $page->internalLinkKeywords,
-					'blank' => $page->internalLinkBlank
+					'blank' => $page->internalLinkBlank,
 				];
 			}
 		}
@@ -38,7 +37,7 @@ class InternalLinks {
 				$entry['url'],
 				$entry['keywords'],
 				$entry['nofollow'],
-				$entry['blank']
+				$entry['blank'],
 			]);
 		}
 	}

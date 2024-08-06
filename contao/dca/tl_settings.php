@@ -17,4 +17,5 @@ PaletteManipulator::create()
 	->addLegend('internal_links_legend', 'chmod_legend', PaletteManipulator::POSITION_AFTER)
 	->addField('internalLinkIgnoreElements', 'internal_links_legend', PaletteManipulator::POSITION_APPEND)
 	->addField('internalLinkCaseSensitive', 'internal_links_legend', PaletteManipulator::POSITION_APPEND)
-	->applyToPalette('default', 'tl_settings');
+	->applyToPalette('default', 'tl_settings')
+;
