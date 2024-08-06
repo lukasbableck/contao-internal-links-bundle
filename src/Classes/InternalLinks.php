@@ -2,6 +2,7 @@
 namespace Lukasbableck\ContaoInternalLinksBundle\Classes;
 
 use Contao\PageModel;
+use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
 
 class InternalLinks {
@@ -17,7 +18,7 @@ class InternalLinks {
 				$index[] = [
 					'rootPageID' => $page->rootId,
 					'url' => $page->getAbsoluteUrl(),
-					'keywords' => explode(',', $page->internalLinkKeywords),
+					'keywords' => $page->internalLinkKeywords,
 				];
 			}
 		}
@@ -33,7 +34,7 @@ class InternalLinks {
 			$connection->executeQuery($query, [
 				$entry['rootPageID'],
 				$entry['url'],
-				serialize($entry['keywords']),
+				$entry['keywords']
 			]);
 		}
 	}
