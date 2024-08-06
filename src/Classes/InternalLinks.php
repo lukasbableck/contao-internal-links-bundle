@@ -12,6 +12,7 @@ class InternalLinks {
 		$pages = PageModel::findAll();
 		$index = [];
 		foreach ($pages as $page) {
+			$page->loadDetails();
 			if ($page->internalLinkKeywords) {
 				$index[] = [
 					'rootPageID' => $page->rootId,
