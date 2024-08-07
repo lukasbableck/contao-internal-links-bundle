@@ -1,6 +1,7 @@
 <?php
 namespace Lukasbableck\ContaoInternalLinksBundle\EventListener;
 
+use Contao\Config;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\PageModel;
 use Contao\StringUtil;
@@ -28,8 +29,19 @@ class ModifyFrontendPageListener {
 		}
 
 		$buffer = preg_replace_callback('/<body[^>]*>(.*?)<\/body>/s', function ($matches) use ($keywords) {
-			$matches[1] = preg_replace_callback('/\b('.implode('|', array_map('preg_quote', array_keys($keywords))).')\b/', function ($matches) use ($keywords) {
-				$link = $keywords[$matches[0]];
+			$forbidden_elements = Config::get('internalLinkIgnoreElements');
+			$forbidden_elements .= '<script><style><link>';
+
+			$case_sensitive = Config::get('internalLinkCaseSensitive');
+			$mod = '';
+			if (!$case_sensitive) {
+				$mod = 'i';
+			}
+
+			$matches[1] = preg_replace_callback('/\b('.implode('|', array_map('preg_quote', array_keys($keywords))).')\b/'.$mod, function ($matches) use ($keywords, $forbidden_elements) {
+				$keywords = array_change_key_case($keywords, CASE_LOWER);
+				$keyword = strtolower($matches[0]);
+				$link = $keywords[$keyword];
 				$attr = '';
 				if ($link['nofollow']) {
 					$attr = ' rel="nofollow';
@@ -40,6 +52,10 @@ class ModifyFrontendPageListener {
 				}
 				if ($link['blank']) {
 					$attr .= ' target="_blank"';
+				}
+
+				if (preg_match('/<('.$forbidden_elements.')[^>]*>.*'.$keyword.'.*<\/\1>/', $matches[0])) {
+					return $matches[0];
 				}
 
 				return \sprintf('<a href="%s"%s>%s</a>', $link['url'], $attr, $matches[0]);

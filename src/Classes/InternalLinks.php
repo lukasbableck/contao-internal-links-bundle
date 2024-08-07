@@ -2,6 +2,7 @@
 namespace Lukasbableck\ContaoInternalLinksBundle\Classes;
 
 use Contao\PageModel;
+use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
 
 class InternalLinks {
@@ -13,7 +14,10 @@ class InternalLinks {
 		$index = [];
 		foreach ($pages as $page) {
 			$page->loadDetails();
-			if ($page->internalLinkKeywords) {
+			if(!$page->published || ($page->start && $page->start > time() || ($page->stop && $page->stop < time()))) {
+				continue;
+			}
+			if ($page->internalLinkKeywords && sizeof(StringUtil::deserialize($page->internalLinkKeywords)) > 0) {
 				$index[] = [
 					'rootPageID' => $page->rootId,
 					'url' => $page->getAbsoluteUrl(),
