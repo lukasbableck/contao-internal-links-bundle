@@ -7,7 +7,7 @@ $GLOBALS['TL_DCA']['tl_internal_link_index'] = [
 		'dataContainer' => DC_Table::class,
 		'sql' => [
 			'keys' => [
-				'url' => 'primary',
+				'url' => 'unique',
 				'rootPageID' => 'index',
 			],
 		],
