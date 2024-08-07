@@ -35,7 +35,6 @@ class InternalLinks {
 		$index = [];
 		$calendarEvents = CalendarEventsModel::findAll();
 		foreach ($calendarEvents as $calendarEvent) {
-			$calendarEvent->loadDetails();
 			$calendar = $calendarEvent->getRelated('pid');
 			$page = $calendar->getRelated('jumpTo');
 			$page->loadDetails();
@@ -49,7 +48,7 @@ class InternalLinks {
 			if ($calendarEvent->internalLinkKeywords && \count($keywords) > 0) {
 				$index[] = [
 					'rootPageID' => $page->rootId,
-					'url' => $page->getAbsoluteUrl($calendarEvent->alias),
+					'url' => $page->getAbsoluteUrl('/'.$calendarEvent->alias),
 					'nofollow' => $calendarEvent->internalLinkNoFollow,
 					'keywords' => serialize($keywords),
 					'blank' => $calendarEvent->internalLinkBlank,
@@ -64,7 +63,6 @@ class InternalLinks {
 		$index = [];
 		$faq = FaqModel::findAll();
 		foreach ($faq as $faqItem) {
-			$faqItem->loadDetails();
 			if (!$faqItem->published || ($faqItem->start && $faqItem->start > time() || ($faqItem->stop && $faqItem->stop < time()))) {
 				continue;
 			}
@@ -87,7 +85,6 @@ class InternalLinks {
 		$index = [];
 		$news = NewsModel::findAll();
 		foreach ($news as $newsItem) {
-			$newsItem->loadDetails();
 			$newsArchive = $newsItem->getRelated('pid');
 			$page = $newsArchive->getRelated('jumpTo');
 			$page->loadDetails();
@@ -101,7 +98,7 @@ class InternalLinks {
 			if ($newsItem->internalLinkKeywords && \count($keywords) > 0) {
 				$index[] = [
 					'rootPageID' => $page->rootId,
-					'url' => $page->getAbsoluteUrl($newsItem->alias),
+					'url' => $page->getAbsoluteUrl('/'.$newsItem->alias),
 					'nofollow' => $newsItem->internalLinkNoFollow,
 					'keywords' => serialize($keywords),
 					'blank' => $newsItem->internalLinkBlank,
