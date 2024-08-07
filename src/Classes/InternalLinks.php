@@ -17,12 +17,13 @@ class InternalLinks {
 			if(!$page->published || ($page->start && $page->start > time() || ($page->stop && $page->stop < time()))) {
 				continue;
 			}
-			if ($page->internalLinkKeywords && sizeof(StringUtil::deserialize($page->internalLinkKeywords)) > 0) {
+			$keywords = array_filter(StringUtil::deserialize($page->internalLinkKeywords));
+			if ($page->internalLinkKeywords && sizeof($keywords) > 0) {
 				$index[] = [
 					'rootPageID' => $page->rootId,
 					'url' => $page->getAbsoluteUrl(),
 					'nofollow' => $page->internalLinkNoFollow,
-					'keywords' => $page->internalLinkKeywords,
+					'keywords' => serialize($keywords),
 					'blank' => $page->internalLinkBlank,
 				];
 			}
