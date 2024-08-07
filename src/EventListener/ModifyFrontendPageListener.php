@@ -39,7 +39,7 @@ class ModifyFrontendPageListener {
 			}
 
 			$matches[1] = preg_replace_callback('/\b('.implode('|', array_map('preg_quote', array_keys($keywords))).')\b/'.$mod, function ($matches) use ($keywords, $forbidden_elements) {
-				$keywords = array_change_key_case($keywords, CASE_LOWER);
+				$keywords = array_change_key_case($keywords, \CASE_LOWER);
 				$keyword = strtolower($matches[0]);
 				$link = $keywords[$keyword];
 				$attr = '';

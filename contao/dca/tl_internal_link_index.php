@@ -15,7 +15,7 @@ $GLOBALS['TL_DCA']['tl_internal_link_index'] = [
 	],
 	'fields' => [
 		'id' => [
-			'sql' => "int(10) unsigned NOT NULL auto_increment",
+			'sql' => 'int(10) unsigned NOT NULL auto_increment',
 		],
 		'url' => [
 			'sql' => 'text NULL',

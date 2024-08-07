@@ -30,7 +30,10 @@
 		"contao/manager-plugin": "<2.0 || >=3.0"
 	},
 	"require-dev": {
+		"contao/calendar-bundle": "^4.13 || ^5.3",
+		"contao/faq-bundle": "^4.13 || ^5.3",
 		"contao/manager-plugin": "^2.0",
+		"contao/news-bundle": "^4.13 || ^5.3",
 		"friendsofphp/php-cs-fixer": "^3.57"
 	},
     "autoload": {
