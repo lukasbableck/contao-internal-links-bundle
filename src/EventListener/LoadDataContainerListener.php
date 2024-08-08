@@ -17,13 +17,6 @@ class LoadDataContainerListener {
 			'eval' => ['tl_class' => 'w50 clr'],
 			'sql' => 'blob NULL',
 		];
-		$GLOBALS['TL_DCA'][$table]['fields']['internalLinkMaxPerPage'] = [
-			'label' => &$GLOBALS['TL_LANG']['internal_links']['internalLinkMaxPerPage'],
-			'exclude' => true,
-			'inputType' => 'text',
-			'eval' => ['tl_class' => 'w50 clr'],
-			'sql' => 'int(10) NULL',
-		];
 		$GLOBALS['TL_DCA'][$table]['fields']['internalLinkNoFollow'] = [
 			'label' => &$GLOBALS['TL_LANG']['internal_links']['internalLinkNoFollow'],
 			'exclude' => true,
@@ -51,7 +44,6 @@ class LoadDataContainerListener {
 		$paletteManipulator = PaletteManipulator::create()
 			->addLegend('internal_links_legend', $legend, PaletteManipulator::POSITION_BEFORE)
 			->addField('internalLinkKeywords', 'internal_links_legend', PaletteManipulator::POSITION_APPEND)
-			->addField('internalLinkMaxPerPage', 'internal_links_legend', PaletteManipulator::POSITION_APPEND)
 			->addField('internalLinkNoFollow', 'internal_links_legend', PaletteManipulator::POSITION_APPEND)
 			->addField('internalLinkBlank', 'internal_links_legend', PaletteManipulator::POSITION_APPEND)
 		;
