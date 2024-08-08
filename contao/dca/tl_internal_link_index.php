@@ -8,7 +8,6 @@ $GLOBALS['TL_DCA']['tl_internal_link_index'] = [
 		'sql' => [
 			'keys' => [
 				'id' => 'primary',
-				'url' => 'unique',
 				'rootPageID' => 'index',
 			],
 		],
