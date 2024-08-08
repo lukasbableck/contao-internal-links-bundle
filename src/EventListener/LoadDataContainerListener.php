@@ -1,6 +1,7 @@
 <?php
 namespace Lukasbableck\ContaoInternalLinksBundle\EventListener;
 
+use Composer\InstalledVersions;
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 
@@ -49,25 +50,31 @@ class LoadDataContainerListener {
 		;
 		switch ($table) {
 			case 'tl_calendar_events':
-				$paletteManipulator
-					->applyToPalette('default', 'tl_calendar_events')
-					->applyToPalette('internal', 'tl_calendar_events')
-					->applyToPalette('external', 'tl_calendar_events')
-					->applyToPalette('article', 'tl_calendar_events')
-				;
+				if (InstalledVersions::isInstalled('contao/calendar-bundle')) {
+					$paletteManipulator
+						->applyToPalette('default', 'tl_calendar_events')
+						->applyToPalette('internal', 'tl_calendar_events')
+						->applyToPalette('external', 'tl_calendar_events')
+						->applyToPalette('article', 'tl_calendar_events')
+					;
+				}
 				break;
 			case 'tl_faq':
-				$paletteManipulator
-					->applyToPalette('default', 'tl_faq')
-				;
+				if (InstalledVersions::isInstalled('contao/faq-bundle')) {
+					$paletteManipulator
+						->applyToPalette('default', 'tl_faq')
+					;
+				}
 				break;
 			case 'tl_news':
-				$paletteManipulator
-					->applyToPalette('default', 'tl_news')
-					->applyToPalette('internal', 'tl_news')
-					->applyToPalette('external', 'tl_news')
-					->applyToPalette('article', 'tl_news')
-				;
+				if (InstalledVersions::isInstalled('contao/news-bundle')) {
+					$paletteManipulator
+						->applyToPalette('default', 'tl_news')
+						->applyToPalette('internal', 'tl_news')
+						->applyToPalette('external', 'tl_news')
+						->applyToPalette('article', 'tl_news')
+					;
+				}
 				break;
 			case 'tl_page':
 				$paletteManipulator
