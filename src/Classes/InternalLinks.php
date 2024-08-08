@@ -83,8 +83,8 @@ class InternalLinks {
 		if (!$page->published || ($page->start && $page->start > time() || ($page->stop && $page->stop < time()))) {
 			return;
 		}
-		$keywords = array_filter(StringUtil::deserialize($page->internalLinkKeywords) ?? []);
-		if ($page->internalLinkKeywords && \count($keywords) > 0) {
+		$keywords = array_filter(StringUtil::deserialize($keywords) ?? []);
+		if (\count($keywords) > 0) {
 			$index[] = [
 				'rootPageID' => $page->rootId,
 				'url' => $url,
