@@ -5,9 +5,7 @@ use Contao\Config;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\PageModel;
 use Contao\StringUtil;
-use DOMDocument;
 use Lukasbableck\ContaoInternalLinksBundle\Models\InternalLinkIndexModel;
-use Symfony\Component\DomCrawler\Crawler;
 
 #[AsHook('modifyFrontendPage')]
 class ModifyFrontendPageListener {
@@ -30,57 +28,61 @@ class ModifyFrontendPageListener {
 			}
 		}
 
-		$crawler = new Crawler($buffer);
+		$ignoreElements = explode('><', trim(Config::get('internalLinkIgnoreElements'), '<>'));
 
-		$crawler->filter('body')->each(function (Crawler $node) use ($keywords) {
-			$node->html($this->replaceKeywords($node->html(), $keywords));
-		});
-
-		$buffer = $crawler->html();
-
-		return $buffer;
-	}
-
-	private function replaceKeywords(string $html, array $keywords): string {
-		$forbidden_elements = Config::get('internalLinkIgnoreElements');
-		$forbidden_elements .= '<script><style><link>';
-
-		$case_sensitive = Config::get('internalLinkCaseSensitive');
-		$mod = '';
-		if (!$case_sensitive) {
-			$mod = 'i';
-		}
-
-		$keywords = array_change_key_case($keywords, \CASE_LOWER);
-
-		$dom = new DOMDocument();
-		$dom->loadHTML($html);
-
+		libxml_use_internal_errors(true);
+		$dom = new \DOMDocument();
+		$dom->loadHTML($buffer);
 		$xpath = new \DOMXPath($dom);
-		$nodes = $xpath->query('//text()');
-
+		$nodes = $xpath->query('body//text()');
 		foreach ($nodes as $node) {
-			$node->nodeValue = preg_replace_callback('/\b('.implode('|', array_map('preg_quote', array_keys($keywords))).')\b/'.$mod, function ($matches) use ($keywords, $forbidden_elements) {
-				$keyword = strtolower($matches[0]);
-				$link = $keywords[$keyword];
-				$attr = '';
-				if ($link['nofollow']) {
-					$attr = ' rel="nofollow';
-					if ($link['blank']) {
-						$attr .= ' noopener';
+			$parents = [];
+			$parentNode = $node->parentNode;
+			while ('#document' !== $parentNode->nodeName) {
+				$parents[] = $parentNode->nodeName;
+				$parentNode = $parentNode->parentNode;
+			}
+			foreach ($parents as $key => $parent) {
+				if (\in_array($parent, $ignoreElements)) {
+					continue 2;
+				}
+			}
+
+			$flag = '';
+			if (!Config::get('internalLinkCaseSensitive')) {
+				$flag = 'i';
+			}
+
+			$element = preg_replace_callback('/\b('.implode('|', array_keys($keywords)).')\b/'.$flag, function ($matches) use ($keywords) {
+				$keyword = $matches[1];
+
+				if (!Config::get('internalLinkCaseSensitive')) {
+					$keywords = array_change_key_case($keywords, \CASE_LOWER);
+					$keyword = strtolower($keyword);
+				}
+				if (isset($keywords[$keyword])) {
+					$newElement = new \DOMDocument();
+					$link = $newElement->createElement('a', $matches[1]);
+					$link->setAttribute('href', $keywords[$keyword]['url']);
+					if ($keywords[$keyword]['nofollow']) {
+						$link->setAttribute('rel', 'nofollow');
 					}
-					$attr .= '"';
-				}
-				if ($link['blank']) {
-					$attr .= ' target="_blank"';
+					if ($keywords[$keyword]['blank']) {
+						$link->setAttribute('target', '_blank');
+						$link->setAttribute('rel', 'noopener');
+					}
+
+					return $newElement->saveHTML($link);
 				}
 
-				if (preg_match('/<('.$forbidden_elements.')[^>]*>.*'.$keyword.'.*<\/\1>/', $matches[0])) {
-					return $matches[0];
-				}
+				return $matches[1];
+			}, $node->data);
 
-				return \sprintf('<a href="%s"%s>%s</a>', $link['url'], $attr, $matches[0]);
-			}, $node->nodeValue);
+			$newElement = $dom->createDocumentFragment();
+			$newElement->appendXML($element);
+			$node->parentNode->replaceChild($newElement, $node);
+
+			// really not sure if this is the best solution, but it works ¯\_(ツ)_/¯
 		}
 
 		return $dom->saveHTML();

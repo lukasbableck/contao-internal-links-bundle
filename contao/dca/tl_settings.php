@@ -4,8 +4,8 @@ use Contao\CoreBundle\DataContainer\PaletteManipulator;
 
 $GLOBALS['TL_DCA']['tl_settings']['fields']['internalLinkIgnoreElements'] = [
 	'inputType' => 'text',
-	'default' => '<h1><h2><h3><h4><h5><h6><a><button><header><footer><img>',
-	'eval' => ['tl_class' => 'long clr'],
+	'default' => '<h1><h2><h3><h4><h5><h6><a><button><header><footer><script><style>',
+	'eval' => ['tl_class' => 'long clr', 'useRawRequestData' => true],
 ];
 $GLOBALS['TL_DCA']['tl_settings']['fields']['internalLinkCaseSensitive'] = [
 	'inputType' => 'checkbox',
