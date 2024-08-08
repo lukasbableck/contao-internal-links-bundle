@@ -71,6 +71,9 @@ class ModifyFrontendPageListener {
 						$link->setAttribute('target', '_blank');
 						$link->setAttribute('rel', 'noopener');
 					}
+					if ($keywords[$keyword]['nofollow'] && $keywords[$keyword]['blank']) {
+						$link->setAttribute('rel', 'nofollow noopener');
+					}
 
 					return $newElement->saveHTML($link);
 				}
