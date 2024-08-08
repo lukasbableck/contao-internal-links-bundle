@@ -46,19 +46,15 @@ class InternalLinks {
 	private function indexFAQ(array &$index): void {
 		$faq = FaqModel::findAll();
 		foreach ($faq as $faqItem) {
+			$faqArchive = $faqItem->getRelated('pid');
+			if (!$faqArchive->jumpTo) {
+				continue;
+			}
 			if (!$faqItem->published || ($faqItem->start && $faqItem->start > time() || ($faqItem->stop && $faqItem->stop < time()))) {
 				continue;
 			}
-			$keywords = array_filter(StringUtil::deserialize($faqItem->internalLinkKeywords) ?? []);
-			if ($faqItem->internalLinkKeywords && \count($keywords) > 0) {
-				$index[] = [
-					'rootPageID' => $faqItem->rootId, // TODO: this doesnt work like that here
-					'url' => $faqItem->getAbsoluteUrl(), // TODO: this doesnt work like that here
-					'nofollow' => $faqItem->internalLinkNoFollow,
-					'keywords' => serialize($keywords),
-					'blank' => $faqItem->internalLinkBlank,
-				];
-			}
+			$page = $faqArchive->getRelated('jumpTo');
+			$this->addToIndex($page, $page->getAbsoluteUrl('/'.$faqItem->alias), $faqItem->internalLinkKeywords, $faqItem->internalLinkNoFollow, $faqItem->internalLinkBlank, $index);
 		}
 	}
 

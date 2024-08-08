@@ -5,7 +5,9 @@ use Contao\Config;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\PageModel;
 use Contao\StringUtil;
+use DOMDocument;
 use Lukasbableck\ContaoInternalLinksBundle\Models\InternalLinkIndexModel;
+use Symfony\Component\DomCrawler\Crawler;
 
 #[AsHook('modifyFrontendPage')]
 class ModifyFrontendPageListener {
@@ -28,18 +30,37 @@ class ModifyFrontendPageListener {
 			}
 		}
 
-		$buffer = preg_replace_callback('/<body[^>]*>(.*?)<\/body>/s', function ($matches) use ($keywords) {
-			$forbidden_elements = Config::get('internalLinkIgnoreElements');
-			$forbidden_elements .= '<script><style><link>';
+		$crawler = new Crawler($buffer);
 
-			$case_sensitive = Config::get('internalLinkCaseSensitive');
-			$mod = '';
-			if (!$case_sensitive) {
-				$mod = 'i';
-			}
+		$crawler->filter('body')->each(function (Crawler $node) use ($keywords) {
+			$node->html($this->replaceKeywords($node->html(), $keywords));
+		});
 
-			$matches[1] = preg_replace_callback('/\b('.implode('|', array_map('preg_quote', array_keys($keywords))).')\b/'.$mod, function ($matches) use ($keywords, $forbidden_elements) {
-				$keywords = array_change_key_case($keywords, \CASE_LOWER);
+		$buffer = $crawler->html();
+
+		return $buffer;
+	}
+
+	private function replaceKeywords(string $html, array $keywords): string {
+		$forbidden_elements = Config::get('internalLinkIgnoreElements');
+		$forbidden_elements .= '<script><style><link>';
+
+		$case_sensitive = Config::get('internalLinkCaseSensitive');
+		$mod = '';
+		if (!$case_sensitive) {
+			$mod = 'i';
+		}
+
+		$keywords = array_change_key_case($keywords, \CASE_LOWER);
+
+		$dom = new DOMDocument();
+		$dom->loadHTML($html);
+
+		$xpath = new \DOMXPath($dom);
+		$nodes = $xpath->query('//text()');
+
+		foreach ($nodes as $node) {
+			$node->nodeValue = preg_replace_callback('/\b('.implode('|', array_map('preg_quote', array_keys($keywords))).')\b/'.$mod, function ($matches) use ($keywords, $forbidden_elements) {
 				$keyword = strtolower($matches[0]);
 				$link = $keywords[$keyword];
 				$attr = '';
@@ -59,11 +80,9 @@ class ModifyFrontendPageListener {
 				}
 
 				return \sprintf('<a href="%s"%s>%s</a>', $link['url'], $attr, $matches[0]);
-			}, $matches[1]);
+			}, $node->nodeValue);
+		}
 
-			return '<body>'.$matches[1].'</body>';
-		}, $buffer);
-
-		return $buffer;
+		return $dom->saveHTML();
 	}
 }

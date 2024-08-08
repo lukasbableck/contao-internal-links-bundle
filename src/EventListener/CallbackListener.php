@@ -4,8 +4,13 @@ namespace Lukasbableck\ContaoInternalLinksBundle\EventListener;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
 use Contao\DataContainer;
 use Lukasbableck\ContaoInternalLinksBundle\Classes\InternalLinks;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use Symfony\Component\HttpKernel\Event\KernelEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 class CallbackListener {
+	private static bool $updateIndex = false;
+
 	public function __construct(private InternalLinks $internalLinks) {
 	}
 
@@ -14,7 +19,7 @@ class CallbackListener {
 	#[AsCallback(table: 'tl_news', target: 'config.ondelete')]
 	#[AsCallback(table: 'tl_page', target: 'config.ondelete')]
 	public function onDelete(DataContainer $dc, int $undoId): void {
-		$this->internalLinks->buildIndex(); // TODO: this does not work yet, because the record is not deleted at this point
+		self::$updateIndex = true;
 	}
 
 	#[AsCallback(table: 'tl_calendar_events', target: 'config.oninvalidate_cache_tags')]
@@ -22,8 +27,15 @@ class CallbackListener {
 	#[AsCallback(table: 'tl_news', target: 'config.oninvalidate_cache_tags')]
 	#[AsCallback(table: 'tl_page', target: 'config.oninvalidate_cache_tags')]
 	public function onInvalidateCacheTags(DataContainer $dc, array $tags): array {
-		$this->internalLinks->buildIndex();
+		self::$updateIndex = true;
 
 		return $tags;
+	}
+
+	#[AsEventListener(KernelEvents::TERMINATE)]
+	public function onTerminate(KernelEvent $event): void {
+		if (self::$updateIndex) {
+			$this->internalLinks->buildIndex();
+		}
 	}
 }
