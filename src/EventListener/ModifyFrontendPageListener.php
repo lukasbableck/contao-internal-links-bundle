@@ -28,7 +28,8 @@ class ModifyFrontendPageListener {
 			}
 		}
 
-		$ignoreElements = explode('><', trim(Config::get('internalLinkIgnoreElements'), '<>'));
+		$ignoreElements = Config::get('internalLinkIgnoreElements');
+		$ignoreElements = explode('><', trim($ignoreElements, '<>'));
 
 		libxml_use_internal_errors(true);
 		$dom = new \DOMDocument();
