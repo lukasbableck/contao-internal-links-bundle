@@ -65,6 +65,7 @@ class ModifyFrontendPageListener {
 				if (isset($keywords[$keyword])) {
 					$newElement = new \DOMDocument();
 					$link = $newElement->createElement('a', $matches[1]);
+					$link->setAttribute('class', 'internal-link');
 					$link->setAttribute('href', $keywords[$keyword]['url']);
 					if ($keywords[$keyword]['nofollow']) {
 						$link->setAttribute('rel', 'nofollow');
