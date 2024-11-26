@@ -10,9 +10,10 @@ use Lukasbableck\ContaoInternalLinksBundle\Models\InternalLinkIndexModel;
 #[AsHook('modifyFrontendPage')]
 class ModifyFrontendPageListener {
 	public function __invoke(string $buffer, string $templateName): string {
-		$rootPage = PageModel::findByPk($GLOBALS['objPage']->rootId);
+		$page = $GLOBALS['objPage'];
+		$rootPage = PageModel::findByPk($page->rootId);
 		$index = InternalLinkIndexModel::findBy(['rootPageID=?'], [$rootPage->id]);
-		if (!$index) {
+		if($page->disableInternalLinks || !$index) {
 			return $buffer;
 		}
 
