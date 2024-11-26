@@ -11,13 +11,6 @@ class LoadDataContainerListener {
 		if (!\in_array($table, ['tl_calendar_events', 'tl_faq', 'tl_news', 'tl_page'])) {
 			return;
 		}
-		$GLOBALS['TL_DCA'][$table]['fields']['disableInternalLinks'] = [
-			'label' => &$GLOBALS['TL_LANG']['internal_links']['disableInternalLinks'],
-			'exclude' => true,
-			'inputType' => 'checkbox',
-			'eval' => ['tl_class' => 'w50 clr'],
-			'sql' => "char(1) NOT NULL default ''",
-		];
 		$GLOBALS['TL_DCA'][$table]['fields']['internalLinkKeywords'] = [
 			'label' => &$GLOBALS['TL_LANG']['internal_links']['internalLinkKeywords'],
 			'exclude' => true,
@@ -84,6 +77,14 @@ class LoadDataContainerListener {
 				}
 				break;
 			case 'tl_page':
+				$GLOBALS['TL_DCA'][$table]['fields']['disableInternalLinks'] = [
+					'label' => &$GLOBALS['TL_LANG']['internal_links']['disableInternalLinks'],
+					'exclude' => true,
+					'inputType' => 'checkbox',
+					'eval' => ['tl_class' => 'w50 clr'],
+					'sql' => "char(1) NOT NULL default ''",
+				];
+
 				$paletteManipulator = PaletteManipulator::create()
 					->addLegend('internal_links_legend', $legend, PaletteManipulator::POSITION_BEFORE)
 					->addField('disableInternalLinks', 'internal_links_legend', PaletteManipulator::POSITION_APPEND)
