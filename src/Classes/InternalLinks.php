@@ -27,11 +27,15 @@ class InternalLinks {
 			$this->indexNews($index);
 		}
 
+		dump($index);
 		$this->saveIndex($index);
 	}
 
 	private function indexCalendarEvents(array &$index): void {
 		$calendarEvents = CalendarEventsModel::findAll();
+		if(!is_iterable($calendarEvents)){
+			return;
+		}
 		foreach ($calendarEvents as $calendarEvent) {
 			$calendar = $calendarEvent->getRelated('pid');
 			if (!$calendarEvent->published || ($calendarEvent->start && $calendarEvent->start > time() || ($calendarEvent->stop && $calendarEvent->stop < time()))) {
@@ -39,12 +43,19 @@ class InternalLinks {
 			}
 
 			$page = $calendar->getRelated('jumpTo');
-			$this->addToIndex($page, $page->getAbsoluteUrl('/'.$calendarEvent->alias), $calendarEvent->internalLinkKeywords, $calendarEvent->internalLinkNoFollow, $calendarEvent->internalLinkBlank, $index);
+			try{
+				$this->addToIndex($page, $page->getAbsoluteUrl('/'.$calendarEvent->alias), $calendarEvent->internalLinkKeywords, $calendarEvent->internalLinkNoFollow, $calendarEvent->internalLinkBlank, $index);
+			}catch(\Exception $e){
+				continue;
+			}
 		}
 	}
 
 	private function indexFAQ(array &$index): void {
 		$faq = FaqModel::findAll();
+		if(!is_iterable($faq)){
+			return;
+		}
 		foreach ($faq as $faqItem) {
 			$faqArchive = $faqItem->getRelated('pid');
 			if (!$faqArchive->jumpTo) {
@@ -54,12 +65,19 @@ class InternalLinks {
 				continue;
 			}
 			$page = $faqArchive->getRelated('jumpTo');
-			$this->addToIndex($page, $page->getAbsoluteUrl('/'.$faqItem->alias), $faqItem->internalLinkKeywords, $faqItem->internalLinkNoFollow, $faqItem->internalLinkBlank, $index);
+			try{
+				$this->addToIndex($page, $page->getAbsoluteUrl('/'.$faqItem->alias), $faqItem->internalLinkKeywords, $faqItem->internalLinkNoFollow, $faqItem->internalLinkBlank, $index);
+			}catch(\Exception $e){
+				continue;
+			}
 		}
 	}
 
 	private function indexNews(array &$index): void {
 		$news = NewsModel::findAll();
+		if(!is_iterable($news)){
+			return;
+		}
 		foreach ($news as $newsItem) {
 			$newsArchive = $newsItem->getRelated('pid');
 			if (!$newsItem->published || ($newsItem->start && $newsItem->start > time() || ($newsItem->stop && $newsItem->stop < time()))) {
@@ -67,14 +85,22 @@ class InternalLinks {
 			}
 
 			$page = $newsArchive->getRelated('jumpTo');
-			$this->addToIndex($page, $page->getAbsoluteUrl('/'.$newsItem->alias), $newsItem->internalLinkKeywords, $newsItem->internalLinkNoFollow, $newsItem->internalLinkBlank, $index);
+			try{
+				$this->addToIndex($page, $page->getAbsoluteUrl('/'.$newsItem->alias), $newsItem->internalLinkKeywords, $newsItem->internalLinkNoFollow, $newsItem->internalLinkBlank, $index);
+			}catch(\Exception $e){
+				continue;
+			}
 		}
 	}
 
 	private function indexPages(array &$index): void {
 		$pages = PageModel::findAll();
 		foreach ($pages as $page) {
-			$this->addToIndex($page, $page->getAbsoluteUrl(), $page->internalLinkKeywords, $page->internalLinkNoFollow, $page->internalLinkBlank, $index);
+			try{
+				$this->addToIndex($page, $page->getAbsoluteUrl(), $page->internalLinkKeywords, $page->internalLinkNoFollow, $page->internalLinkBlank, $index);
+			}catch(\Exception $e){
+				continue;
+			}
 		}
 	}
 

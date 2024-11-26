@@ -82,7 +82,7 @@ class ModifyFrontendPageListener {
 				}
 
 				return $matches[1];
-			}, $node->data);
+			}, $node->textContent);
 
 			$newElement = $dom->createDocumentFragment();
 			$newElement->appendXML($element);
