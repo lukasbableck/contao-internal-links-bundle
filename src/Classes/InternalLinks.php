@@ -7,6 +7,7 @@ use Contao\FaqModel;
 use Contao\NewsModel;
 use Contao\PageModel;
 use Contao\StringUtil;
+use Contao\System;
 use Doctrine\DBAL\Connection;
 
 class InternalLinks {
@@ -27,13 +28,18 @@ class InternalLinks {
 			$this->indexNews($index);
 		}
 
-		dump($index);
+		if (isset($GLOBALS['TL_HOOKS']['internalLinksIndex']) && \is_array($GLOBALS['TL_HOOKS']['internalLinksIndex'])) {
+			foreach ($GLOBALS['TL_HOOKS']['internalLinksIndex'] as $callback) {
+				System::importStatic($callback[0])->{$callback[1]}($index, $this);
+			}
+		}
+
 		$this->saveIndex($index);
 	}
 
 	private function indexCalendarEvents(array &$index): void {
 		$calendarEvents = CalendarEventsModel::findAll();
-		if(!is_iterable($calendarEvents)){
+		if (!is_iterable($calendarEvents)) {
 			return;
 		}
 		foreach ($calendarEvents as $calendarEvent) {
@@ -43,9 +49,9 @@ class InternalLinks {
 			}
 
 			$page = $calendar->getRelated('jumpTo');
-			try{
+			try {
 				$this->addToIndex($page, $page->getAbsoluteUrl('/'.$calendarEvent->alias), $calendarEvent->internalLinkKeywords, $calendarEvent->internalLinkNoFollow, $calendarEvent->internalLinkBlank, $index);
-			}catch(\Exception $e){
+			} catch (\Exception $e) {
 				continue;
 			}
 		}
@@ -53,7 +59,7 @@ class InternalLinks {
 
 	private function indexFAQ(array &$index): void {
 		$faq = FaqModel::findAll();
-		if(!is_iterable($faq)){
+		if (!is_iterable($faq)) {
 			return;
 		}
 		foreach ($faq as $faqItem) {
@@ -65,9 +71,9 @@ class InternalLinks {
 				continue;
 			}
 			$page = $faqArchive->getRelated('jumpTo');
-			try{
+			try {
 				$this->addToIndex($page, $page->getAbsoluteUrl('/'.$faqItem->alias), $faqItem->internalLinkKeywords, $faqItem->internalLinkNoFollow, $faqItem->internalLinkBlank, $index);
-			}catch(\Exception $e){
+			} catch (\Exception $e) {
 				continue;
 			}
 		}
@@ -75,7 +81,7 @@ class InternalLinks {
 
 	private function indexNews(array &$index): void {
 		$news = NewsModel::findAll();
-		if(!is_iterable($news)){
+		if (!is_iterable($news)) {
 			return;
 		}
 		foreach ($news as $newsItem) {
@@ -85,9 +91,9 @@ class InternalLinks {
 			}
 
 			$page = $newsArchive->getRelated('jumpTo');
-			try{
+			try {
 				$this->addToIndex($page, $page->getAbsoluteUrl('/'.$newsItem->alias), $newsItem->internalLinkKeywords, $newsItem->internalLinkNoFollow, $newsItem->internalLinkBlank, $index);
-			}catch(\Exception $e){
+			} catch (\Exception $e) {
 				continue;
 			}
 		}
@@ -96,9 +102,9 @@ class InternalLinks {
 	private function indexPages(array &$index): void {
 		$pages = PageModel::findAll();
 		foreach ($pages as $page) {
-			try{
+			try {
 				$this->addToIndex($page, $page->getAbsoluteUrl(), $page->internalLinkKeywords, $page->internalLinkNoFollow, $page->internalLinkBlank, $index);
-			}catch(\Exception $e){
+			} catch (\Exception $e) {
 				continue;
 			}
 		}
