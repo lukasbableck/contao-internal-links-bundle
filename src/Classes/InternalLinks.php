@@ -110,7 +110,7 @@ class InternalLinks {
 		}
 	}
 
-	private function addToIndex(PageModel $page, string $url, ?string $keywords, string $nofollow, string $blank, array &$index): void {
+	public function addToIndex(PageModel $page, string $url, ?string $keywords, string $nofollow, string $blank, array &$index): void {
 		$page->loadDetails();
 		if (!$page->published || ($page->start && $page->start > time() || ($page->stop && $page->stop < time()))) {
 			return;
