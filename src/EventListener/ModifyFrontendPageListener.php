@@ -34,7 +34,7 @@ class ModifyFrontendPageListener {
 
 		libxml_use_internal_errors(true);
 		$dom = new \DOMDocument();
-		$dom->loadHTML($buffer);
+		$dom->loadHTML(mb_encode_numericentity($buffer, [0x80, 0x10FFFF, 0, ~0], 'UTF-8'));
 		$xpath = new \DOMXPath($dom);
 		$nodes = $xpath->query('body//text()');
 		foreach ($nodes as $node) {
