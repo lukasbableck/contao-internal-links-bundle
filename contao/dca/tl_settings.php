@@ -8,12 +8,13 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['internalLinkIgnoreElements'] = [
 ];
 $GLOBALS['TL_DCA']['tl_settings']['fields']['internalLinkOccurrence'] = [
 	'inputType' => 'select',
-	'options' => ['first', 'last', 'all'],
+	'options' => ['occurrence_all', 'occurrence_first', 'occurrence_last'],
+	'reference' => &$GLOBALS['TL_LANG']['tl_settings'],
 	'eval' => ['tl_class' => 'w50'],
 ];
 $GLOBALS['TL_DCA']['tl_settings']['fields']['internalLinkCaseSensitive'] = [
 	'inputType' => 'checkbox',
-	'eval' => ['tl_class' => 'w50 clr'],
+	'eval' => ['tl_class' => 'w50'],
 ];
 
 PaletteManipulator::create()

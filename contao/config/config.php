@@ -6,4 +6,4 @@ $GLOBALS['TL_MODELS']['tl_internal_link_index'] = InternalLinkIndexModel::class;
 
 $GLOBALS['TL_CONFIG']['internalLinkIgnoreElements'] = '<h1><h2><h3><h4><h5><h6><a><button><header><footer><script><style>';
 $GLOBALS['TL_CONFIG']['internalLinkCaseSensitive'] = false;
-$GLOBALS['TL_CONFIG']['internalLinkOccurrence'] = 'all';
+$GLOBALS['TL_CONFIG']['internalLinkOccurrence'] = 'occurrence_all';
