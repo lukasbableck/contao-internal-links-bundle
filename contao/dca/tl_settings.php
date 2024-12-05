@@ -14,7 +14,7 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['internalLinkOccurrence'] = [
 ];
 $GLOBALS['TL_DCA']['tl_settings']['fields']['internalLinkCaseSensitive'] = [
 	'inputType' => 'checkbox',
-	'eval' => ['tl_class' => 'w50'],
+	'eval' => ['tl_class' => 'w50 m12'],
 ];
 
 PaletteManipulator::create()
