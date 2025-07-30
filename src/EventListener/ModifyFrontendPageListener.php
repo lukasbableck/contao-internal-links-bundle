@@ -82,7 +82,13 @@ class ModifyFrontendPageListener {
 							$pos = strpos($node->textContent, $keyword);
 						}
 						if (false !== $pos) {
-							$link = $this->buildLink($keyword, $value);
+							$nextChar = $node->textContent[$pos + \strlen($keyword)] ?? '';
+							if (preg_match('/\w/', $nextChar)) {
+								continue;
+							}
+
+							$word = substr($node->textContent, $pos, \strlen($keyword));
+							$link = $this->buildLink($word, $value);
 							$element = substr_replace($node->textContent, $link, $pos, \strlen($keyword));
 							$replaced[] = $keyword;
 						}
@@ -99,7 +105,13 @@ class ModifyFrontendPageListener {
 							$pos = strrpos($node->textContent, $keyword);
 						}
 						if (false !== $pos) {
-							$link = $this->buildLink($keyword, $value);
+							$nextChar = $node->textContent[$pos + \strlen($keyword)] ?? '';
+							if (preg_match('/\w/', $nextChar)) {
+								continue;
+							}
+
+							$word = substr($node->textContent, $pos, \strlen($keyword));
+							$link = $this->buildLink($word, $value);
 							$element = substr_replace($node->textContent, $link, $pos, \strlen($keyword));
 							$replaced[] = $keyword;
 						}
