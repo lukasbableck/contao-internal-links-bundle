@@ -91,6 +91,7 @@ class ModifyFrontendPageListener {
 							$word = substr($textContent, $pos, \strlen($keyword));
 							$link = $this->buildLink($word, $value);
 							$element = substr_replace($textContent, $link, $pos, \strlen($keyword));
+							$textContent = $element;
 							$replaced[] = $keyword;
 						}
 					}
@@ -114,6 +115,7 @@ class ModifyFrontendPageListener {
 							$word = substr($textContent, $pos, \strlen($keyword));
 							$link = $this->buildLink($word, $value);
 							$element = substr_replace($textContent, $link, $pos, \strlen($keyword));
+							$textContent = $element;
 							$replaced[] = $keyword;
 						}
 					}
@@ -132,6 +134,7 @@ class ModifyFrontendPageListener {
 
 						return $keyword;
 					}, $textContent);
+					$textContent = $element;
 			}
 
 			if (!$element) {
