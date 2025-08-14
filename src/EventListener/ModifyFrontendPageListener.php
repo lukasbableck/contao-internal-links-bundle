@@ -69,6 +69,7 @@ class ModifyFrontendPageListener {
 			}
 
 			$element = null;
+			$textContent = htmlspecialchars($node->textContent);
 
 			switch ($occurrence) {
 				case 'occurrence_first':
@@ -77,19 +78,19 @@ class ModifyFrontendPageListener {
 							continue;
 						}
 						if (!Config::get('internalLinkCaseSensitive')) {
-							$pos = stripos($node->textContent, $keyword);
+							$pos = stripos($textContent, $keyword);
 						} else {
-							$pos = strpos($node->textContent, $keyword);
+							$pos = strpos($textContent, $keyword);
 						}
 						if (false !== $pos) {
-							$nextChar = $node->textContent[$pos + \strlen($keyword)] ?? '';
+							$nextChar = $textContent[$pos + \strlen($keyword)] ?? '';
 							if (preg_match('/\w/', $nextChar)) {
 								continue;
 							}
 
-							$word = substr($node->textContent, $pos, \strlen($keyword));
+							$word = substr($textContent, $pos, \strlen($keyword));
 							$link = $this->buildLink($word, $value);
-							$element = substr_replace($node->textContent, $link, $pos, \strlen($keyword));
+							$element = substr_replace($textContent, $link, $pos, \strlen($keyword));
 							$replaced[] = $keyword;
 						}
 					}
@@ -100,19 +101,19 @@ class ModifyFrontendPageListener {
 							continue;
 						}
 						if (!Config::get('internalLinkCaseSensitive')) {
-							$pos = strripos($node->textContent, $keyword);
+							$pos = strripos($textContent, $keyword);
 						} else {
-							$pos = strrpos($node->textContent, $keyword);
+							$pos = strrpos($textContent, $keyword);
 						}
 						if (false !== $pos) {
-							$nextChar = $node->textContent[$pos + \strlen($keyword)] ?? '';
+							$nextChar = $textContent[$pos + \strlen($keyword)] ?? '';
 							if (preg_match('/\w/', $nextChar)) {
 								continue;
 							}
 
-							$word = substr($node->textContent, $pos, \strlen($keyword));
+							$word = substr($textContent, $pos, \strlen($keyword));
 							$link = $this->buildLink($word, $value);
-							$element = substr_replace($node->textContent, $link, $pos, \strlen($keyword));
+							$element = substr_replace($textContent, $link, $pos, \strlen($keyword));
 							$replaced[] = $keyword;
 						}
 					}
@@ -130,7 +131,7 @@ class ModifyFrontendPageListener {
 						}
 
 						return $keyword;
-					}, $node->textContent);
+					}, $textContent);
 			}
 
 			if (!$element) {
