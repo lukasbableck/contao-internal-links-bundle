@@ -7,9 +7,13 @@ use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Lukasbableck\ContaoInternalLinksBundle\Models\InternalLinkIndexModel;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 #[AsHook('modifyFrontendPage')]
 class ModifyFrontendPageListener {
+	public function __construct(private readonly RequestStack $requestStack) {
+	}
+
 	public function __invoke(string $buffer, string $templateName): string {
 		$page = $GLOBALS['objPage'];
 		$layout = LayoutModel::findByPk($page->layout);
@@ -18,8 +22,10 @@ class ModifyFrontendPageListener {
 			return $buffer;
 		}
 
+		$request = $this->requestStack->getCurrentRequest();
+		$url = $request ? $request->getSchemeAndHttpHost().$request->getRequestUri() : '';
 		$rootPage = PageModel::findByPk($page->rootId);
-		$index = InternalLinkIndexModel::findBy(['rootPageID=?'], [$rootPage->id]);
+		$index = InternalLinkIndexModel::findBy(['rootPageID=?', 'url<>?'], [$rootPage->id, $url]);
 		if ($page->disableInternalLinks || !$index) {
 			return $buffer;
 		}
